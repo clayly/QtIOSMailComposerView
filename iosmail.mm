@@ -137,9 +137,9 @@ void IOSMail::sendDb()
 void IOSMail::contactUs()
 {
     NSString* schemeStr = @"mailto";
-    NSString* toMailStr = @"support@biolink.tech";
-    NSString* subjectStr = [@"For Dear Biolink Support Team" stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
-    NSString* startStr = [@"Dear Biolink Support Team!" stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
+    NSString* toMailStr = @"example@gmail.com";
+    NSString* subjectStr = [@"For Dear Support Team" stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
+    NSString* startStr = [@"Dear Support Team!" stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
     NSString* mailStr = [NSString stringWithFormat:@"%@:%@?subject=%@&body=%@", schemeStr, toMailStr, subjectStr, startStr];
     NSURL* mailUrl = [NSURL URLWithString:mailStr];
     if ([[UIApplication sharedApplication] canOpenURL:mailUrl]) {
