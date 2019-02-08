@@ -106,11 +106,10 @@ void IOSMail::sendDb()
     
     //--------------------- message prepare
     
-    [mail setToRecipients:[NSArray arrayWithObjects:@"support@biolink.tech", nil]];
+    [mail setToRecipients:[NSArray arrayWithObjects:@"example@gmail.com", nil]];
     [mail setSubject:@"DB dump"];
-    [mail setMessageBody:@"Dear developer, here is your DB dump." isHTML:YES];
     [mail setModalTransitionStyle:UIModalTransitionStyleCrossDissolve];
-    NSArray *db = @[@"ddnadb", @"ddnadb.syncclient", @"ddnadb.syncserver"];
+    NSArray *db = @[@"firstDb", @"secondDb", @"thirdDb"];
     BOOL isThereAnyData = FALSE;
     for (id object in db) {
         NSString *path = [[NSBundle mainBundle] pathForResource:object ofType:@"sqlite"];
@@ -121,9 +120,11 @@ void IOSMail::sendDb()
         [mail addAttachmentData:data mimeType:@"application/x-sqlite3" fileName:path];
         isThereAnyData = TRUE;
     }
-//    if (!isThereAnyData) {
-//        return;
-//    }
+    if (isThereAnyData) {
+        [mailController setMessageBody:@"Dear developer!\n Here is your DB dump :)." isHTML:YES];
+    } else {
+        [mailController setMessageBody:@"Dear developer!\n Tryed to send you DB dump, but didnt find one :(." isHTML:YES];
+    }
     
     //--------------------- show mail
     
