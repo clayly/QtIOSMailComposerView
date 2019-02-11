@@ -7,36 +7,10 @@
 #include "iosmail.h"
 
 @interface IOSMailDelegate : NSObject <MFMailComposeViewControllerDelegate>
-//@property (nonatomic) IOSMail* m_iosMail;
-//@property (nonatomic, strong) IOSMail* m_iosMail;
-@end
 
-@interface IOSMailDelegate()
-{
-    IOSMail * m_iosMail;
-//    @property (nonatomic, weak) IOSMail* m_iosMail;
-}
 @end
 
 @implementation IOSMailDelegate
-
-//- (id) initWithIOSMail:(IOSMail *)iosMail
-//{
-//    self = [super init];
-//    if (self) {
-//        m_iosMail = iosMail;
-//    }
-//    return self;
-//}
-
-//- (id) init
-//{
-//    self = [super init];
-////    if (self) {
-////        [self setM_iosMail:iosMail];
-////    }
-//    return self;
-//}
 
 - (void) mailComposeController:(MFMailComposeViewController *)__attribute__((unused))controller
            didFinishWithResult:(MFMailComposeResult)__attribute__((unused))result
@@ -44,96 +18,62 @@
 {
     NSLog(@"didFinishWithResult");
     [[[[UIApplication sharedApplication] keyWindow] rootViewController] dismissViewControllerAnimated:YES completion:nil];
-    //[controller dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end
 
-//IOSMail::IOSMail(QQuickItem* parent)
 IOSMail::IOSMail(QObject* parent)
-//    : QQuickItem(parent)
-//    : QQuickItem(nullptr)
     : QObject(parent)
-//    , m_delegate([[IOSMailDelegate alloc] initWithIOSMail:this])
-//    , m_delegate((__bridge __strong void *)reinterpret_cast<id>([[IOSMailDelegate alloc] initWithIOSMail:this]))
-//    , m_controller((__bridge __strong void *)reinterpret_cast<id>([[MFMailComposeViewController alloc] init]))
-    , m_delegate(nullptr)
+    , m_delegate([[IOSMailDelegate alloc] init])
 {
 }
 
+// this way we CAN add attachments
 void IOSMail::sendDb()
 {
+    //--------------------- prepare mail view controller
+
     if (![MFMailComposeViewController canSendMail]) {
         return;
     }
     
-    //--------------------- UIView
+    //--------------------- prepare mail view controller
+
+    MFMailComposeViewController* mailController = [[MFMailComposeViewController alloc] init];
+    [mailController setMailComposeDelegate:m_delegate];
+    [mailController setToRecipients:[NSArray arrayWithObjects:@"example@gmail.com", nil]];
+    [mailController setSubject:@"DB dump"];
+    [mailController setModalTransitionStyle:UIModalTransitionStyleCrossDissolve];
     
-//    UIView *view = static_cast<UIView *>(QGuiApplication::platformNativeInterface()->nativeResourceForWindow("uiview", window()));
-//    UIView *view = static_cast<UIView *>(QGuiApplication::platformNativeInterface()->nativeResourceForWindow("uiview", QGuiApplication::focusWindow()));
-//    UIView* view = (__bridge UIView *)reinterpret_cast<void *>(QGuiApplication::platformNativeInterface()->nativeResourceForWindow("uiview", QGuiApplication::focusWindow()));
-//    UIView* view = (__bridge UIView *)reinterpret_cast<void *>(QGuiApplication::platformNativeInterface()->nativeResourceForWindow("uiview", window()));
+    //--------------------- add attachments
     
-    //--------------------- UIViewController
-    
-//    UIViewController* qtCtrl = [[view window] rootViewController];
-    UIViewController* qtCtrl = [[(__bridge UIView *)reinterpret_cast<void *>(QGuiApplication::platformNativeInterface()->nativeResourceForWindow("uiview", QGuiApplication::focusWindow())) window] rootViewController];
-    
-    //--------------------- MFMailComposeViewController
-    
-//    MFMailComposeViewController* mail = [[[MFMailComposeViewController alloc] init] autorelease]; // no-arc: quit-crash
-    MFMailComposeViewController* mail = [[MFMailComposeViewController alloc] init]; // arc: quit-crash
-//    MFMailComposeViewController* mail = (__bridge MFMailComposeViewController *)reinterpret_cast<void *>(m_controller);
-//    m_controller = (__bridge void *)reinterpret_cast<MFMailComposeViewController *>(mail);
-//    m_controller = mail;
-    
-    //--------------------- IOSMailDelegategit
-    
-//    IOSMailDelegate* delegate = [[IOSMailDelegate alloc] init];
-//    m_delegate = (__bridge void *)reinterpret_cast<IOSMailDelegate *>(delegate);
-//    m_delegate = delegate;
-    m_delegate = [[IOSMailDelegate alloc] init];
-    
-    //--------------------- delegate setup
-    
-//    [mail setMailComposeDelegate:delegate];
-    [mail setMailComposeDelegate:m_delegate];
-//    [mail setMailComposeDelegate:[[IOSMailDelegate alloc] init]]; // arc: quit-crash
-//    [(__bridge MFMailComposeViewController *)reinterpret_cast<void *>(m_controller) setMailComposeDelegate:[[IOSMailDelegate alloc] init]];
-//    [mail setMailComposeDelegate:[[[IOSMailDelegate alloc] init] autorelease]];  // no-arc: quit-crash
-//    [mail setMailComposeDelegate:id(m_delegate)]; // no-arc: ok
-//    [mail setMailComposeDelegate:((__bridge __strong id)reinterpret_cast<void *>(m_delegate))]; // arc: enter-crash
-    
-    //--------------------- message prepare
-    
-    [mail setToRecipients:[NSArray arrayWithObjects:@"example@gmail.com", nil]];
-    [mail setSubject:@"DB dump"];
-    [mail setModalTransitionStyle:UIModalTransitionStyleCrossDissolve];
     NSArray *db = @[@"firstDb", @"secondDb", @"thirdDb"];
-    BOOL isThereAnyData = FALSE;
-    for (id object in db) {
-        NSString *path = [[NSBundle mainBundle] pathForResource:object ofType:@"sqlite"];
-        NSData *data = [NSData dataWithContentsOfFile:path];
-        if (!data) {
+    BOOL withAttachment = FALSE;
+    for (NSString* dbName in db) {
+        NSString* dbPath = [[NSBundle mainBundle] pathForResource:dbName ofType:@"sqlite"];
+        NSData* db = [NSData dataWithContentsOfFile:dbPath];
+        if (!db) {
             continue;
         }
-        [mail addAttachmentData:data mimeType:@"application/x-sqlite3" fileName:path];
-        isThereAnyData = TRUE;
+        [mailController addAttachmentData:db mimeType:@"application/x-sqlite3" fileName:dbName];
+        withAttachment = TRUE;
     }
-    if (isThereAnyData) {
+    if (withAttachment) {
         [mailController setMessageBody:@"Dear developer!\n Here is your DB dump :)." isHTML:YES];
     } else {
         [mailController setMessageBody:@"Dear developer!\n Tryed to send you DB dump, but didnt find one :(." isHTML:YES];
     }
     
-    //--------------------- show mail
+    //--------------------- show mail view
     
-    [qtCtrl presentViewController:mail animated:YES completion:^{
+    UIViewController* mainController = [[(__bridge UIView *)reinterpret_cast<void *>(QGuiApplication::platformNativeInterface()->nativeResourceForWindow("uiview", QGuiApplication::focusWindow())) window] rootViewController];
+    
+    [mainController presentViewController:mailController animated:YES completion:^{
         NSLog(@"presentViewController completion");
-       // [mail dismissViewControllerAnimated:YES completion:nil];
     }];
 }
 
+// this way we CAN NOT add attachments
 void IOSMail::contactUs()
 {
     NSString* schemeStr = @"mailto";
