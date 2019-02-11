@@ -59,9 +59,9 @@ void IOSMail::sendDb()
         withAttachment = TRUE;
     }
     if (withAttachment) {
-        [mailController setMessageBody:@"Dear developer!\n Here is your DB dump :)." isHTML:YES];
+        [mailController setMessageBody:@"Dear developer! Here is your DB dump :)." isHTML:YES];
     } else {
-        [mailController setMessageBody:@"Dear developer!\n Tryed to send you DB dump, but didnt find one :(." isHTML:YES];
+        [mailController setMessageBody:@"Dear developer! Tryed to send you DB dump, but didnt find one :(." isHTML:YES];
     }
     
     //--------------------- show mail view
@@ -75,12 +75,12 @@ void IOSMail::sendDb()
 // this way we CAN NOT add attachments
 void IOSMail::contactUs()
 {
-   NSString* scheme = @"mailto";
-   NSString* recipient = @"example@gmail.com";
-   NSString* subject = [@"For Dear Support Team" stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
-   NSString* start = [@"Dear Support Team!" stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
-   NSURL* mailUrl = [NSURL URLWithString:[NSString stringWithFormat:@"%@:%@?subject=%@&body=%@", scheme, recipient, subject, start]];
-   if ([[UIApplication sharedApplication] canOpenURL:mailUrl]) {
-       [[UIApplication sharedApplication] openURL:mailUrl options:@{} completionHandler:nil];
-   }
+    NSString* scheme = @"mailto";
+    NSString* recipient = @"example@gmail.com";
+    NSString* subject = [@"For Dear Support Team" stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
+    NSString* start = [@"Dear Support Team!" stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
+    NSURL* mailUrl = [NSURL URLWithString:[NSString stringWithFormat:@"%@:%@?subject=%@&body=%@", scheme, recipient, subject, start]];
+    if ([[UIApplication sharedApplication] canOpenURL:mailUrl]) {
+        [[UIApplication sharedApplication] openURL:mailUrl options:@{} completionHandler:nil];
+    }
 }
