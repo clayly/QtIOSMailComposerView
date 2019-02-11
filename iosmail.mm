@@ -16,7 +16,7 @@
            didFinishWithResult:(MFMailComposeResult)__attribute__((unused))result
                          error:(NSError *)__attribute__((unused))error
 {
-    NSLog(@"didFinishWithResult");
+    NSLog(@"mailComposeController didFinishWithResult");
     [[[[UIApplication sharedApplication] keyWindow] rootViewController] dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -31,7 +31,7 @@ IOSMail::IOSMail(QObject* parent)
 // this way we CAN add attachments
 void IOSMail::sendDb()
 {
-    //--------------------- prepare mail view controller
+    //--------------------- basic check for mail possibility
 
     if (![MFMailComposeViewController canSendMail]) {
         return;
@@ -67,7 +67,6 @@ void IOSMail::sendDb()
     //--------------------- show mail view
     
     UIViewController* mainController = [[(__bridge UIView *)reinterpret_cast<void *>(QGuiApplication::platformNativeInterface()->nativeResourceForWindow("uiview", QGuiApplication::focusWindow())) window] rootViewController];
-    
     [mainController presentViewController:mailController animated:YES completion:^{
         NSLog(@"presentViewController completion");
     }];
