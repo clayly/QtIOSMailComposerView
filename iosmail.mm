@@ -75,13 +75,12 @@ void IOSMail::sendDb()
 // this way we CAN NOT add attachments
 void IOSMail::contactUs()
 {
-    NSString* schemeStr = @"mailto";
-    NSString* toMailStr = @"example@gmail.com";
-    NSString* subjectStr = [@"For Dear Support Team" stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
-    NSString* startStr = [@"Dear Support Team!" stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
-    NSString* mailStr = [NSString stringWithFormat:@"%@:%@?subject=%@&body=%@", schemeStr, toMailStr, subjectStr, startStr];
-    NSURL* mailUrl = [NSURL URLWithString:mailStr];
-    if ([[UIApplication sharedApplication] canOpenURL:mailUrl]) {
-        [[UIApplication sharedApplication] openURL:mailUrl options:@{} completionHandler:nil];
-    }
+   NSString* scheme = @"mailto";
+   NSString* recipient = @"example@gmail.com";
+   NSString* subject = [@"For Dear Support Team" stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
+   NSString* start = [@"Dear Support Team!" stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
+   NSURL* mailUrl = [NSURL URLWithString:[NSString stringWithFormat:@"%@:%@?subject=%@&body=%@", scheme, recipient, subject, start]];
+   if ([[UIApplication sharedApplication] canOpenURL:mailUrl]) {
+       [[UIApplication sharedApplication] openURL:mailUrl options:@{} completionHandler:nil];
+   }
 }
