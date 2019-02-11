@@ -4,7 +4,6 @@
 int main(int argc, char **argv)
 {
     QGuiApplication app(argc, argv);
-//    app.primaryScreen()->setOrientationUpdateMask(Qt::PortraitOrientation | Qt::LandscapeOrientation);
 
     qmlRegisterType<IOSMail>("IOSMail", 1, 0, "IOSMail");
 
